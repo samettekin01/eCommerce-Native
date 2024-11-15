@@ -1,8 +1,11 @@
+import { useFavorite } from '@/app/hooks/useFavorite'
 import { Store } from '@/app/types/store'
 import { Image, StyleSheet, Text, View } from 'react-native'
 import Icon from 'react-native-vector-icons/AntDesign'
 
 export default function ProductCard({ data }: { data: Store }) {
+
+    const { handleFavorite, favorite } = useFavorite(data)
 
     return (
         <View style={styles.productContainer}>
@@ -13,9 +16,10 @@ export default function ProductCard({ data }: { data: Store }) {
             <Text style={styles.productTitle}>{data.title}</Text>
             <View style={styles.productPrice}>
                 <Icon
-                    name={"hearto"}
+                    name={favorite !== -1 ? "heart" : "hearto"}
                     size={20}
                     color="#456aff"
+                    onPress={handleFavorite}
                 />
                 <Text style={styles.productPriceText}>{data.price} $</Text>
             </View>
@@ -26,12 +30,13 @@ export default function ProductCard({ data }: { data: Store }) {
 const styles = StyleSheet.create({
     productContainer: {
         display: "flex",
+        flex: 1,
         flexDirection: "column",
         justifyContent: "space-between",
         alignItems: "center",
         backgroundColor: "#fff",
         width: "100%",
-        height: "auto",
+        height: "auto"
     },
     boxShadow: {
         shadowColor: "#000000",

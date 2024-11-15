@@ -1,15 +1,18 @@
 import { Image, ScrollView, Text, View } from 'react-native'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useLocalSearchParams } from 'expo-router'
 import { Store } from '../../types/store'
 import { AirbnbRating } from '@rneui/themed'
 import { statusBarHeight } from '@/app/commons/commons'
 import { Button } from '@rneui/base'
 import Icon from 'react-native-vector-icons/MaterialIcons'
+import { useFavorite } from '@/app/hooks/useFavorite'
 
 export default function ProductCardDetail() {
     const { id } = useLocalSearchParams()
     const [product, setProduct] = useState<Store>()
+
+    const { handleFavorite, favorite } = useFavorite(product)
 
     useEffect(() => {
         fetch(`https://fakestoreapi.com/products/${id}`)
@@ -17,6 +20,7 @@ export default function ProductCardDetail() {
             .then(json => setProduct(json))
             .catch(e => alert(e))
     }, [id])
+
     return (
         <View style={{ flex: 1, backgroundColor: "#fff", marginTop: statusBarHeight + 60 }}>
             <ScrollView
@@ -109,7 +113,12 @@ export default function ProductCardDetail() {
                             padding: 15
                         }}
                     />
-                    <Icon color="#0051d4" size={30} name="favorite-border" />
+                    <Icon
+                        color="#0051d4"
+                        size={30}
+                        name={favorite !== -1 ? "favorite" : "favorite-border"}
+                        onPress={handleFavorite}
+                    />
                 </View>
             </View>
         </View>

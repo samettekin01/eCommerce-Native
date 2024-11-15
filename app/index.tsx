@@ -1,27 +1,16 @@
 import { useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 import { FlatList, Image, ScrollView, StyleSheet, Text, View, Dimensions, TouchableOpacity } from "react-native"
-import Icon from "react-native-vector-icons/AntDesign"
 import { Store } from "./types/store"
 import { statusBarHeight } from "./commons/commons"
+import ProductCard from "./components/ProductCard/ProductCard"
 
 export default function Index() {
 
   const [products, setProducts] = useState<Store[]>()
   const [sliderProducts, setSliderProducts] = useState<Store[]>()
-  const [favorites, setFavorites] = useState<number[]>([])
 
   const route = useRouter()
-
-  const toggleFavorite = (productId: number) => {
-    setFavorites(prev => {
-      if (prev.includes(productId)) {
-        return prev.filter(id => id !== productId)
-      } else {
-        return [...prev, productId]
-      }
-    })
-  }
 
   const getProduct = (id: number) => {
     route.navigate({
@@ -83,20 +72,7 @@ export default function Index() {
               activeOpacity={.95}
               onPress={() => getProduct(d.id)}
             >
-              <Image
-                style={styles.productImage}
-                source={{ uri: d.image }}
-              />
-              <Text style={styles.productTitle}>{d.title}</Text>
-              <View style={styles.productPrice}>
-                <Icon
-                  name={favorites.includes(d.id) ? "heart" : "hearto"}
-                  size={20}
-                  color="#456aff"
-                  onPress={() => toggleFavorite(d.id)}
-                />
-                <Text style={styles.productPriceText}>{d.price} $</Text>
-              </View>
+              <ProductCard data={d} />
             </TouchableOpacity>
           ) : <Text>not loading</Text>}
         </View>
@@ -123,8 +99,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "space-evenly",
     gap: 20,
-    margin: 4,
-
+    margin: 4
   },
   productContainer: {
     display: "flex",

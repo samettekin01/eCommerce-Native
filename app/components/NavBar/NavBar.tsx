@@ -61,6 +61,7 @@ export default function NavBar() {
                     name='favorite'
                     size={30}
                     color="#000"
+                    onPress={() => route.navigate("/components/Favorites/Favorites")}
                 />
                 <Icon
                     name="shopping-cart"
