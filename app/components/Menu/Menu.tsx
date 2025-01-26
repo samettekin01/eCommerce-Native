@@ -65,7 +65,8 @@ const styles = StyleSheet.create({
         left: 0,
         height: Dimensions.get("window").height,
         width: Dimensions.get("window").width,
-        backgroundColor: "#000000cc"
+        backgroundColor: "#000000cc",
+        zIndex: 999,
     },
     menuContainer: {
         display: "flex",

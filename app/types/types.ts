@@ -12,3 +12,9 @@ export interface Store {
   amount?: number
   total?: number
 }
+
+export interface UserInformation {
+  name?: string
+  mail?: string
+  pass?: string
+}

@@ -1,19 +1,17 @@
-import { useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 import { FlatList, Image, ScrollView, StyleSheet, Text, View, Dimensions, TouchableOpacity } from "react-native"
 import { Store } from "./types/types"
 import statusBarHeight from "./commons/commons"
 import ProductCard from "./components/ProductCard/ProductCard"
+import { router } from "expo-router"
 
 export default function Index() {
 
   const [products, setProducts] = useState<Store[]>()
   const [sliderProducts, setSliderProducts] = useState<Store[]>()
 
-  const route = useRouter()
-
   const getProduct = (id: number) => {
-    route.navigate({
+    router.navigate({
       pathname: "/components/ProductCardDetail/ProductCardDetail",
       params: { id: id }
     })

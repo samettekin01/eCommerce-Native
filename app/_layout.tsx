@@ -1,8 +1,9 @@
 import { Stack } from "expo-router";
+import { Drawer } from "expo-router/drawer";
 import { StatusBar } from 'expo-status-bar';
-import NavBar from "./components/NavBar/NavBar";
 import { Provider } from "react-redux";
 import store from "./redux/store/store";
+import NavBar from "./components/NavBar/NavBar";
 
 export default function RootLayout() {
   return (
@@ -11,6 +12,8 @@ export default function RootLayout() {
         <Stack.Screen name="index" />
         <Stack.Screen name="components/Favorites/Favorites" />
         <Stack.Screen name="components/Basket/Basket" />
+        <Stack.Screen name="components/SignUp/SignUp" />
+        <Drawer />
       </Stack>
       <StatusBar backgroundColor="#fff" />
       <NavBar />
