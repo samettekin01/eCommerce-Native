@@ -1,6 +1,6 @@
 import { Store } from '@/app/types/types'
 import { memo, useCallback, useEffect, useState } from 'react'
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import ProductCard from '../ProductCard/ProductCard'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useRouter } from 'expo-router'
@@ -33,27 +33,22 @@ function Favorites() {
     }, [getFavorites])
 
     return (
-        <ScrollView
-            style={{ backgroundColor: "#f2f2f2", marginTop: (statusBarHeight() || 0) + 60 }}
-            showsVerticalScrollIndicator={false}
-        >
-            <View style={styles.container}>
-                <View style={styles.productsContainer}>
-                    {favorites && favorites?.length > 0 ? favorites.map(d =>
-                        <TouchableOpacity
-                            key={d.id}
-                            style={[styles.productContainer, styles.boxShadow]}
-                            activeOpacity={.95}
-                            onPress={() => getProduct(d.id)}
-                        >
-                            <ProductCard data={d} />
-                        </TouchableOpacity>
-                    ) :
-                        <View style={styles.noProduct}>
-                            <Text style={styles.noProductText}>Not found favorite</Text>
-                        </View>
-                    }
-                </View>
+        <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
+            <View style={styles.productsContainer}>
+                {favorites && favorites?.length > 0 ? favorites.map(d =>
+                    <TouchableOpacity
+                        key={d.id}
+                        style={[styles.productContainer, styles.boxShadow]}
+                        activeOpacity={.95}
+                        onPress={() => getProduct(d.id)}
+                    >
+                        <ProductCard data={d} />
+                    </TouchableOpacity>
+                ) :
+                    <View style={styles.noProduct}>
+                        <Text style={styles.noProductText}> No products in favorites</Text>
+                    </View>
+                }
             </View >
         </ScrollView >
     )
@@ -62,9 +57,10 @@ function Favorites() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        marginTop: 10,
-        marginBottom: 30
+        width: Dimensions.get("window").width,
+        marginTop: (statusBarHeight() || 0) + 60,
+        padding: 8,
+        backgroundColor: "#fff",
     },
     productsContainer: {
         display: "flex",
@@ -72,8 +68,7 @@ const styles = StyleSheet.create({
         flexWrap: "wrap",
         justifyContent: "space-evenly",
         gap: 20,
-        margin: 4,
-
+        margin: 4
     },
     productContainer: {
         display: "flex",

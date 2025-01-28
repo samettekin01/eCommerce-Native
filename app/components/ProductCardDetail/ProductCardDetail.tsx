@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 import statusBarHeight from '@/app/commons/commons'
 import useFavorite from '@/app/hooks/useFavorite'
 import { useAppDispatch, useAppSelector } from '@/app/redux/store/store'
-import { calculateTotal } from '@/app/redux/slices/shopSlice'
+import { calculateAmountTotal, calculateTotal } from '@/app/redux/slices/shopSlice'
 import { getDetailProduct } from '@/app/redux/slices/productsSlice'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -47,6 +47,7 @@ function ProductCardDetail() {
                 await AsyncStorage.setItem("basket", JSON.stringify([product]))
             }
             dispatch(calculateTotal())
+            dispatch(calculateAmountTotal())
         } catch (e) {
             alert(e)
         }

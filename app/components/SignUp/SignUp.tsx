@@ -1,11 +1,11 @@
 import Icon from 'react-native-vector-icons/MaterialIcons'
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { UserInformation } from "@/app/types/types"
 import { Dimensions, StyleSheet, View } from 'react-native'
 import { Button, Input, Text } from '@rneui/themed'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useAppDispatch } from '@/app/redux/store/store'
-import { getUser } from '@/app/redux/slices/statusSlice'
+import { getUser, setIsLogoutMenuOpen } from '@/app/redux/slices/statusSlice'
 import { router } from 'expo-router'
 
 function SignUp() {
@@ -15,6 +15,7 @@ function SignUp() {
         mail: "",
         pass: "",
     })
+    const [isThereUser, setIsThereUser] = useState<boolean>(false)
 
     const dispatch = useAppDispatch()
 
@@ -27,10 +28,24 @@ function SignUp() {
             console.log("An error occurred while saving the user: ", e)
         }
     }
+
+    useEffect(() => {
+        const getUserFromStorage = async () => {
+            const user = await AsyncStorage.getItem("user")
+            if (user) {
+                setIsThereUser(true)
+            } else {
+                setIsThereUser(false)
+                dispatch(setIsLogoutMenuOpen(false));
+                dispatch(getUser());
+            }
+        }
+        getUserFromStorage()
+    }, [isThereUser, dispatch])
     return (
         <View style={styles.container}>
             <View style={styles.inputsContainer}>
-                <Text h2 style={styles.headerText}>Sign Up</Text>
+                <Text h2 style={styles.headerText}>{isThereUser ? "Edit Profile" : "Sign Up"}</Text>
                 <View style={styles.inputContainer}>
                     <Input
                         value={user.name}

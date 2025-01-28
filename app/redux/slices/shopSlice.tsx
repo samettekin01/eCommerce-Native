@@ -5,11 +5,13 @@ import { Store } from "@/app/types/types"
 interface InitialState {
     total: number
     grandTotal: number
+    amountTotal: number
 }
 
 const initialState: InitialState = {
     total: 0,
     grandTotal: 0,
+    amountTotal: 0
 }
 
 export const calculateTotal = createAsyncThunk<number>("shop/calculateTotal", async () => {
@@ -26,8 +28,7 @@ export const calculateTotal = createAsyncThunk<number>("shop/calculateTotal", as
         console.log(`Error parsing basket data: ${e}`)
         return 0
     }
-}
-)
+})
 
 export const calculateGrandTotal = createAsyncThunk<number>("shop/calculateGrandTotal", async () => {
     try {
@@ -43,8 +44,24 @@ export const calculateGrandTotal = createAsyncThunk<number>("shop/calculateGrand
         console.log(`Error parsing basket data: ${e}`)
         return 0
     }
-}
-)
+})
+
+export const calculateAmountTotal = createAsyncThunk<number>("shop/calculateAmountTotal", async () => {
+    try {
+        const result = await AsyncStorage.getItem("basket")
+        if (result) {
+            const getBasket: Store[] = JSON.parse(result)
+            return getBasket
+                .map(data => data.amount ?? 0)
+                .reduce((prev, cur) => (prev! + cur!), 0)
+        }
+        return 0
+    } catch (e) {
+        console.log(`Error parsing basket data: ${e}`)
+        return 0
+    }
+})
+
 
 export const shopSlice = createSlice({
     name: "shop",
@@ -57,6 +74,9 @@ export const shopSlice = createSlice({
             })
             .addCase(calculateGrandTotal.fulfilled, (state, action) => {
                 state.grandTotal = action.payload
+            })
+            .addCase(calculateAmountTotal.fulfilled, (state, action) => {
+                state.amountTotal = action.payload
             })
     },
 })

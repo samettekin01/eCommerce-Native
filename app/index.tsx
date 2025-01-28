@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react"
-import { FlatList, Image, ScrollView, StyleSheet, Text, View, Dimensions, TouchableOpacity } from "react-native"
-import { Store } from "./types/types"
+import { useEffect } from "react"
+import { FlatList, Image, ScrollView, StyleSheet, Text, View, Dimensions, TouchableOpacity, KeyboardAvoidingViewBase } from "react-native"
 import statusBarHeight from "./commons/commons"
 import ProductCard from "./components/ProductCard/ProductCard"
 import { router } from "expo-router"
+import { useAppDispatch, useAppSelector } from "./redux/store/store"
+import { getProducts, getSliderProducts } from "./redux/slices/productsSlice"
 
 export default function Index() {
 
-  const [products, setProducts] = useState<Store[]>()
-  const [sliderProducts, setSliderProducts] = useState<Store[]>()
+  const dispatch = useAppDispatch()
+
+  const { products, sliderProducts } = useAppSelector(state => state.products)
 
   const getProduct = (id: number) => {
     router.navigate({
@@ -18,30 +20,9 @@ export default function Index() {
   }
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch('https://fakestoreapi.com/products')
-        const json = await res.json()
-        setProducts(json)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-    fetchData()
-  }, [])
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch('https://fakestoreapi.com/products?limit=5')
-        const json = await res.json()
-        setSliderProducts(json)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-    fetchData()
-  }, [])
+    dispatch(getProducts())
+    dispatch(getSliderProducts())
+  }, [dispatch])
 
   return (
     <ScrollView
