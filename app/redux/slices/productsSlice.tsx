@@ -23,7 +23,7 @@ const initialState: InitialState = {
     sliderProductsStatus: ""
 }
 
-export const getProducts = createAsyncThunk("category", async () => {
+export const getProducts = createAsyncThunk("products", async () => {
     const response = await fetch("https://fakestoreapi.com/products/")
     if (!response.ok) {
         throw new Error('Network response was not ok')

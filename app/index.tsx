@@ -1,156 +1,71 @@
-import { useEffect } from "react"
-import { FlatList, Image, ScrollView, StyleSheet, Text, View, Dimensions, TouchableOpacity, KeyboardAvoidingViewBase } from "react-native"
-import statusBarHeight from "./commons/commons"
-import ProductCard from "./components/ProductCard/ProductCard"
-import { router } from "expo-router"
-import { useAppDispatch, useAppSelector } from "./redux/store/store"
-import { getProducts, getSliderProducts } from "./redux/slices/productsSlice"
+import { useEffect } from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+import { useAppDispatch, useAppSelector } from './redux/store/store';
+import { getProducts, getSliderProducts } from './redux/slices/productsSlice';
+import BottomTabNavigation from './navigations/BottomTabNavigation';
+import DrawerNavigator from './navigations/DrawerNavigation';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { DrawerActions, NavigationProp, useNavigation, useRoute } from '@react-navigation/native';
+import { Badge } from '@rneui/base';
+
+const Stack = createStackNavigator();
 
 export default function Index() {
-
-  const dispatch = useAppDispatch()
-
-  const { products, sliderProducts } = useAppSelector(state => state.products)
-
-  const getProduct = (id: number) => {
-    router.navigate({
-      pathname: "/components/ProductCardDetail/ProductCardDetail",
-      params: { id: id }
-    })
-  }
+  const dispatch = useAppDispatch();
+  const { amountTotal } = useAppSelector(state => state.shop);
+  const navigation = useNavigation<NavigationProp<any>>();
 
   useEffect(() => {
-    dispatch(getProducts())
-    dispatch(getSliderProducts())
-  }, [dispatch])
+    dispatch(getProducts());
+    dispatch(getSliderProducts());
+  }, [dispatch]);
 
   return (
-    <ScrollView
-      style={{ backgroundColor: "#f2f2f2", marginTop: (statusBarHeight() || 0) + 60 }}
-      showsVerticalScrollIndicator={false}
-    >
-      <FlatList
-        style={[styles.boxShadow, {
-          height: Dimensions.get("window").height / 3,
-          backgroundColor: "#fff",
-          padding: 10
-        }]}
-        data={sliderProducts}
-        keyExtractor={item => item.id.toString()}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.sliderItemContainer}
-            onPress={() => getProduct(item.id)}
-          >
-            <Image
-              style={styles.sliderImage}
-              source={{ uri: item.image }}
-            />
-            <View style={{ width: Dimensions.get("window").width / 3 }}>
-              <Text>{item.title}</Text>
-              <Text style={[styles.productPriceText, { marginLeft: "auto", marginRight: 10, fontSize: 20 }]}>{item.price} $</Text>
-            </View>
+    <Stack.Navigator screenOptions={{
+      headerRight: () => (
+        <View style={styles.headerIcons}>
+          <TouchableOpacity onPress={() => navigation.navigate('BottomTab', { screen: 'Search' })}>
+            <Icon name="search" size={30} color="#000" />
           </TouchableOpacity>
-        )}
-      />
-      <View style={styles.container}>
-        <View style={styles.productsContainer}>
-          {products ? products.map(d =>
-            <TouchableOpacity
-              key={d.id}
-              style={[styles.productContainer, styles.boxShadow]}
-              activeOpacity={.95}
-              onPress={() => getProduct(d.id)}
-            >
-              <ProductCard data={d} />
-            </TouchableOpacity>
-          ) : <Text>not loading</Text>}
+          <TouchableOpacity
+            style={styles.basketIcon}
+            onPress={() => navigation.navigate('BottomTab', { screen: 'Basket' })}>
+            <Icon name="shopping-cart" size={30} color="#000" />
+            {amountTotal > 0 && <Badge value={amountTotal} containerStyle={{ position: 'absolute', top: -4, right: -4 }} />}
+          </TouchableOpacity>
         </View>
-      </View >
-    </ScrollView>
-  )
+      ),
+      headerTitle: "E-Commerce",
+      headerTitleAlign: 'center',
+      headerLeft: () => {
+        const canGoBack = navigation.canGoBack();
+        return canGoBack ? (
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Icon name="arrow-back" size={30} />
+          </TouchableOpacity>
+        ) :
+          <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
+            <Icon name="menu" size={30} color="#000" style={{ marginLeft: 10 }} />
+          </TouchableOpacity>
+      },
+    }}
+      initialRouteName="Root">
+      <Stack.Screen name="Root" component={DrawerNavigator} />
+      <Stack.Screen name="BottomTab" component={BottomTabNavigation} />
+    </Stack.Navigator>
+  );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 30
-  },
-  text: {
-    color: "white",
-    fontSize: 30,
-    fontWeight: "700"
-  },
-  productsContainer: {
+  headerIcons: {
     display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-evenly",
-    gap: 20,
-    margin: 4
+    flexDirection: 'row',
+    marginRight: 10,
+    gap: 10,
   },
-  productContainer: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    width: "45%",
-    height: "auto",
-    borderRadius: 10,
-    padding: 10,
-  },
-  boxShadow: {
-    shadowColor: "#000000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.16,
-    shadowRadius: 1.51,
-    elevation: 2
-  },
-  productTitle: {
-    textAlign: "center",
-    color: "#000",
-    margin: 1,
-    fontSize: 12
-  },
-  productImage: {
-    width: "70%",
-    height: 200,
-    resizeMode: "center"
-  },
-  productPrice: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-    paddingHorizontal: 10,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  productPriceText: {
-    color: "#fa5502",
-    fontSize: 20,
-    fontWeight: "bold"
-  },
-  sliderItemContainer: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    width: Dimensions.get('window').width,
-    height: "100%",
-  },
-  sliderImage: {
-    width: "50%",
-    height: "100%",
-    resizeMode: 'contain',
-  },
-})
+  basketIcon: {
+    display: 'flex',
+    flexDirection: 'row',
+  }
+});

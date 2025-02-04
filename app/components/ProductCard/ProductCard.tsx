@@ -2,9 +2,8 @@ import { Image, StyleSheet, Text, View } from 'react-native'
 import useFavorite from '@/app/hooks/useFavorite'
 import { Store } from '@/app/types/types'
 import Icon from 'react-native-vector-icons/AntDesign'
-import { memo } from 'react'
 
-function ProductCard({ data }: { data: Store }) {
+export default function ProductCard({ data }: { data: Store }) {
 
     const { handleFavorite, favorite } = useFavorite(data)
 
@@ -75,5 +74,3 @@ const styles = StyleSheet.create({
         fontWeight: "bold"
     }
 })
-
-export default memo(ProductCard)

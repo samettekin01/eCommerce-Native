@@ -1,16 +1,16 @@
 import React from 'react'
 import { View, Text, Dimensions, TouchableOpacity, StyleSheet, FlatList } from 'react-native'
-import { memo, useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@/app/redux/store/store'
 import { calculateAmountTotal, calculateGrandTotal, calculateTotal } from '@/app/redux/slices/shopSlice'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ListItem, useTheme } from '@rneui/themed'
 import { Avatar, Badge, Button } from '@rneui/base'
-import statusBarHeight from '@/app/commons/commons'
+import StatusBarHeightComponent from '@/app/commons/commons'
 import { Store } from '@/app/types/types'
 
-const Basket = () => {
+export default function Basket() {
     const [basket, setBasket] = useState<Store[]>([])
     const grandT = useAppSelector(state => state.shop.grandTotal)
     const dispatch = useAppDispatch()
@@ -144,7 +144,7 @@ const Basket = () => {
                                         <Text style={{ fontWeight: "bold" }}>Total:</Text>{item.total} $
                                     </ListItem.Subtitle>
                                 </ListItem.Content>
-                                <TouchableOpacity onPress={() => productDelete(item.id)}>  
+                                <TouchableOpacity onPress={() => productDelete(item.id)}>
                                     <Icon name='delete' size={20} style={{ color: theme.colors.primary, marginRight: 10 }} />
                                 </TouchableOpacity>
                             </View>
@@ -169,11 +169,11 @@ const Basket = () => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        width: Dimensions.get("window").width,
-        marginTop: (statusBarHeight() || 0) + 60,
+        display: "flex",
+        width: Dimensions.get("window").width, 
+        height: Dimensions.get("window").height,
         padding: 8,
-        backgroundColor: '#fff',
+        backgroundColor: "#fff"
     },
     titleContainer: {
         flexDirection: 'row',
@@ -225,5 +225,3 @@ const styles = StyleSheet.create({
         fontWeight: "bold"
     }
 });
-
-export default memo(Basket)

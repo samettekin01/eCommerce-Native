@@ -8,7 +8,6 @@ interface InitialState {
         email: string,
         pass: string
     },
-    isActive: boolean,
     isLogoutMenuOpen: boolean
 }
 
@@ -19,7 +18,6 @@ const initialState: InitialState = {
         email: "",
         pass: ""
     },
-    isActive: false,
     isLogoutMenuOpen: false
 }
 
@@ -38,9 +36,6 @@ const statusSlice = createSlice({
         },
         setIsLogoutMenuOpen: (state, action) => {
             state.isLogoutMenuOpen = action.payload
-        },
-        setIsActive: (state, action) => {
-            state.isActive = action.payload
         }
     },
     extraReducers: builder => {
@@ -50,5 +45,5 @@ const statusSlice = createSlice({
     }
 })
 
-export const { singUpStatus, setIsLogoutMenuOpen, setIsActive } = statusSlice.actions
+export const { singUpStatus, setIsLogoutMenuOpen } = statusSlice.actions
 export default statusSlice.reducer

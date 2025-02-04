@@ -1,36 +1,30 @@
-import { memo, useEffect } from "react"
+import { useEffect } from "react"
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ScrollView } from "react-native"
-import { useLocalSearchParams, useRouter } from "expo-router"
 import { useAppDispatch, useAppSelector } from "@/app/redux/store/store"
 import { getCategory } from "@/app/redux/slices/productsSlice"
 import ProductCard from "../ProductCard/ProductCard"
-import statusBarHeight from "@/app/commons/commons"
+import StatusBarHeightComponent from "@/app/commons/commons"
+import { NavigationProp } from "@react-navigation/native"
 
-function CategoryProducts() {
+export default function CategoryProducts({ navigation, route }: { navigation: NavigationProp<any>, route: any }) {
 
-    const { id } = useLocalSearchParams()
-    const route = useRouter()
+    const { title } = route.params
 
     const { category } = useAppSelector(state => state.products)
     const dispatch = useAppDispatch()
 
     const getProduct = (id: number) => {
-        route.navigate({
-            pathname: "/components/ProductCardDetail/ProductCardDetail",
-            params: { id: id }
-        })
+        navigation.navigate("ProductDetail", { id: id })
     }
 
     useEffect(() => {
-        if (typeof id === 'string') {
-            dispatch(getCategory(id))
-        }
-    }, [id, dispatch])
+        dispatch(getCategory(title))
+    }, [title, dispatch])
 
     return (
 
         <ScrollView
-            style={{ backgroundColor: "#f2f2f2", marginTop: (statusBarHeight() || 0) + 60 }}
+            style={{ backgroundColor: "#f2f2f2", marginTop: (StatusBarHeightComponent() || 10) }}
             showsVerticalScrollIndicator={false}
         >
             <View style={styles.productsContainer}>
@@ -48,8 +42,6 @@ function CategoryProducts() {
         </ScrollView>
     )
 }
-
-export default memo(CategoryProducts)
 
 const styles = StyleSheet.create({
     container: {

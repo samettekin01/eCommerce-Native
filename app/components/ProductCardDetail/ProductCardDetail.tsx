@@ -1,21 +1,19 @@
-import { memo, useEffect } from 'react'
+import { useEffect } from 'react'
 import { Image, ScrollView, Text, View } from 'react-native'
-import { useLocalSearchParams } from 'expo-router'
 import { Store } from '../../types/types'
 import { Button } from '@rneui/base'
 import Icon from 'react-native-vector-icons/MaterialIcons'
-import statusBarHeight from '@/app/commons/commons'
 import useFavorite from '@/app/hooks/useFavorite'
 import { useAppDispatch, useAppSelector } from '@/app/redux/store/store'
 import { calculateAmountTotal, calculateTotal } from '@/app/redux/slices/shopSlice'
 import { getDetailProduct } from '@/app/redux/slices/productsSlice'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-function ProductCardDetail() {
+export default function ProductCardDetail({ route }: any) {
     const dispatch = useAppDispatch()
     const { productDetail } = useAppSelector<any>(state => state.products)
 
-    const { id } = useLocalSearchParams()
+    const { id } = route.params
     const numberId = Number(id)
 
     const { handleFavorite, favorite } = useFavorite(productDetail)
@@ -54,11 +52,11 @@ function ProductCardDetail() {
     }
 
     useEffect(() => {
-        dispatch(getDetailProduct(numberId))
-    }, [dispatch, numberId])
+        dispatch(getDetailProduct(id))
+    }, [dispatch, id])
 
     return (
-        <View style={{ flex: 1, backgroundColor: "#fff", marginTop: (statusBarHeight() || 0) + 60 }}>
+        <View style={{ flex: 1, backgroundColor: "#fff" }}>
             <ScrollView
                 style={{
                     padding: 10,
@@ -161,5 +159,3 @@ function ProductCardDetail() {
         </View>
     )
 }
-
-export default memo(ProductCardDetail)
