@@ -14,7 +14,6 @@ export default function ProductCardDetail({ route }: any) {
     const { productDetail } = useAppSelector<any>(state => state.products)
 
     const { id } = route.params
-    const numberId = Number(id)
 
     const { handleFavorite, favorite } = useFavorite(productDetail)
 

@@ -1,56 +1,45 @@
-import { Store } from '@/app/types/types'
-import { useEffect, useState } from 'react'
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { useEffect } from 'react'
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import ProductCard from '../ProductCard/ProductCard'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useRouter } from 'expo-router'
-import StatusBarHeightComponent from '@/app/commons/commons'
+import { NavigationProp } from '@react-navigation/native'
+import { useAppDispatch, useAppSelector } from '@/app/redux/store/store'
+import { getFavorites } from '@/app/redux/slices/favoritesSlice'
 
-export default function Favorites() {
+export default function Favorites({ navigation }: { navigation: NavigationProp<any> }) {
 
-    const [favorites, setFavorites] = useState<Store[]>([])
-    const route = useRouter()
+    const {favorites } = useAppSelector( state => state.favorites)
+    const dispatch = useAppDispatch()
 
     const getProduct = (id: number) => {
-        route.navigate({
-            pathname: "/components/ProductCardDetail/ProductCardDetail",
-            params: { id: id }
-        })
+        navigation.navigate('Root', { screen: 'ProductDetail', params: { id: id } });
     }
 
     useEffect(() => {
-        const getFavorites = async () => {
-            try {
-                const getFavorite = await AsyncStorage.getItem("favorites")
-                const getList = JSON.parse(getFavorite || '[]')
-                setFavorites(getList)
-            } catch (e) {
-                alert(e)
-            }
-        }
-        getFavorites()
-    }, [])
+        dispatch(getFavorites())
+    },[dispatch])
 
     return (
-        <ScrollView showsVerticalScrollIndicator={false} >
-            <View style={styles.container}>
-                <View style={styles.productsContainer}>
-                    {favorites && favorites?.length > 0 ? favorites.map(d =>
-                        <TouchableOpacity
-                            key={d.id}
-                            style={[styles.productContainer, styles.boxShadow]}
-                            activeOpacity={.95}
-                            onPress={() => getProduct(d.id)}
-                        >
-                            <ProductCard data={d} />
-                        </TouchableOpacity>
-                    ) :
-                        <View style={styles.noProduct}>
-                            <Text style={styles.noProductText}>No products in favorites</Text>
-                        </View>
-                    }
-                </View >
-            </View>
+        <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.container}
+
+        >
+            <View style={styles.productsContainer}>
+                {favorites && favorites?.length > 0 ? favorites.map(d =>
+                    <TouchableOpacity
+                        key={d.id}
+                        style={[styles.productContainer, styles.boxShadow]}
+                        activeOpacity={.95}
+                        onPress={() => getProduct(d.id)}
+                    >
+                        <ProductCard data={d} />
+                    </TouchableOpacity>
+                ) :
+                    <View style={styles.noProduct}>
+                        <Text style={styles.noProductText}>No products in favorites</Text>
+                    </View>
+                }
+            </View >
         </ScrollView >
     )
 }
@@ -58,10 +47,8 @@ export default function Favorites() {
 const styles = StyleSheet.create({
     container: {
         display: "flex",
-        width: Dimensions.get("window").width, 
-        height: Dimensions.get("window").height,
         padding: 8,
-        backgroundColor: "#fff"
+        backgroundColor: "#f2f2f2"
     },
     productsContainer: {
         display: "flex",

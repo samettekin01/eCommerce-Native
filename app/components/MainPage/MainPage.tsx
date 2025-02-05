@@ -7,7 +7,7 @@ export default function MainPage({ navigation }: { navigation: NavigationProp<an
   const { products, sliderProducts } = useAppSelector(state => state.products);
 
   const getProduct = (id: number) => {
-    navigation.navigate('BottomTab', { screen: 'ProductDetail', params: { id: id } });
+    navigation.navigate('Root', { screen: 'ProductDetail', params: { id: id } });
   };
 
   return (

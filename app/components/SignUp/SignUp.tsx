@@ -1,10 +1,10 @@
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { useEffect, useState } from "react"
 import { UserInformation } from "@/app/types/types"
-import { Dimensions, StyleSheet, View } from 'react-native'
+import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { Button, Input, Text } from '@rneui/themed'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useAppDispatch } from '@/app/redux/store/store'
+import { useAppDispatch, useAppSelector } from '@/app/redux/store/store'
 import { getUser, setIsLogoutMenuOpen } from '@/app/redux/slices/statusSlice'
 import { NavigationProp } from '@react-navigation/native'
 
@@ -16,17 +16,34 @@ export default function SignUp({ navigation }: { navigation: NavigationProp<any>
         pass: "",
     })
     const [isThereUser, setIsThereUser] = useState<boolean>(false)
+    const [error, setError] = useState('');
+    const { isThereUserState } = useAppSelector(state => state.status);
 
     const dispatch = useAppDispatch()
 
     const handleSignUp = async () => {
-        try {
-            await AsyncStorage.setItem("user", JSON.stringify(user))
-            dispatch(getUser())
-            navigation.navigate("Home")
-        } catch (e) {
-            console.log("An error occurred while saving the user: ", e)
+        if (!user.name) {
+            setError("Don't leave this field empty");
+        } else {
+            try {
+                await AsyncStorage.setItem("user", JSON.stringify(user))
+                dispatch(getUser())
+                navigation.navigate("Home")
+                setError('')
+            } catch (e) {
+                console.log("An error occurred while saving the user: ", e)
+            }
         }
+    }
+
+    const handleLogout = async () => {
+        await AsyncStorage.setItem('user', '');
+        dispatch(setIsLogoutMenuOpen(false));
+        dispatch(getUser());
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'Root', params: { screen: 'MainPage' } }],
+        })
     }
 
     useEffect(() => {
@@ -45,8 +62,12 @@ export default function SignUp({ navigation }: { navigation: NavigationProp<any>
 
     return (
         <View style={styles.container}>
+            {isThereUserState && isThereUserState?.name  && <TouchableOpacity style={styles.buttonContainer} onPress={handleLogout}>
+                <Icon name="logout" size={20} color="#000" />
+                <Text style={styles.logoutbutton}>Logout</Text>
+            </TouchableOpacity>}
             <View style={styles.inputsContainer}>
-                <Text h2 style={styles.headerText}>{isThereUser ? "Edit Profile" : "Sign Up"}</Text>
+                <Text h2 style={styles.headerText}>{isThereUserState && isThereUserState.name ? "Edit Profile" : "Sign Up"}</Text>
                 <View style={styles.inputContainer}>
                     <Input
                         value={user.name}
@@ -54,7 +75,9 @@ export default function SignUp({ navigation }: { navigation: NavigationProp<any>
                         leftIcon={<Icon name='person' size={30} />}
                         onChangeText={text => setUser({ ...user, name: text })}
                         autoFocus={true}
+
                     />
+                    {error && <Text>{error}</Text>}
                 </View>
                 <View style={styles.inputContainer}>
                     <Input
@@ -114,5 +137,20 @@ const styles = StyleSheet.create({
         width: Dimensions.get("window").width / 2,
         textAlign: "center",
         marginTop: 10
-    }
+    },
+    buttonContainer: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: 10,
+        borderBottomWidth: 1,
+        paddingBottom: 5
+    },
+    logoutbutton: {
+        textAlign: 'left',
+        fontSize: 18
+    },
 })

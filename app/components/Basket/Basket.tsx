@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Dimensions, TouchableOpacity, StyleSheet, FlatList } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native'
 import { useCallback, useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@/app/redux/store/store'
 import { calculateAmountTotal, calculateGrandTotal, calculateTotal } from '@/app/redux/slices/shopSlice'
@@ -7,7 +7,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ListItem, useTheme } from '@rneui/themed'
 import { Avatar, Badge, Button } from '@rneui/base'
-import StatusBarHeightComponent from '@/app/commons/commons'
 import { Store } from '@/app/types/types'
 
 export default function Basket() {
@@ -169,11 +168,9 @@ export default function Basket() {
 
 const styles = StyleSheet.create({
     container: {
-        display: "flex",
-        width: Dimensions.get("window").width, 
-        height: Dimensions.get("window").height,
+        flex: 1,
         padding: 8,
-        backgroundColor: "#fff"
+        backgroundColor: "#f2f2f2"
     },
     titleContainer: {
         flexDirection: 'row',

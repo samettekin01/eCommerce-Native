@@ -1,10 +1,9 @@
-import { useAppDispatch, useAppSelector } from "@/app/redux/store/store"
+import { useAppSelector } from "@/app/redux/store/store"
 import { Store } from "@/app/types/types";
 import { useEffect, useState } from "react";
 import { ScrollView, TouchableOpacity } from "react-native";
 import { Dimensions, StyleSheet, TextInput, View } from "react-native"
 import ProductCard from "../ProductCard/ProductCard";
-import { getSliderProducts } from "@/app/redux/slices/productsSlice";
 
 export default function Search({ navigation }: any) {
 

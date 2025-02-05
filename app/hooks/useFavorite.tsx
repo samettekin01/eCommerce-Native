@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useState } from "react"
 import { Store } from "../types/types"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { useAppDispatch } from "../redux/store/store"
+import { getFavorites } from "@/app/redux/slices/favoritesSlice"
 
 export default function useFavorite(product?: Store) {
     const [favorite, setFavorite] = useState()
+    const dispatch = useAppDispatch()
 
     const handleFavorite = async () => {
         try {
@@ -21,6 +24,7 @@ export default function useFavorite(product?: Store) {
                 await AsyncStorage.setItem("favorites", JSON.stringify(getFav))
             }
             favoriteStatus()
+            dispatch(getFavorites())
         } catch (e) {
             alert(e)
         }
@@ -29,7 +33,7 @@ export default function useFavorite(product?: Store) {
     const favoriteStatus = useCallback(async () => {
         try {
             const getFavorite = await AsyncStorage.getItem("favorites")
-            const getList = JSON.parse(getFavorite || '[]') 
+            const getList = JSON.parse(getFavorite || '[]')
             if (getList) {
                 setFavorite(getList.findIndex((item: Store) => item.id === product?.id))
             }
@@ -41,6 +45,6 @@ export default function useFavorite(product?: Store) {
     useEffect(() => {
         favoriteStatus()
     }, [favoriteStatus])
-    
+
     return { handleFavorite, favorite }
 }

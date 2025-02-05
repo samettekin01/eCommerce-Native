@@ -3,7 +3,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 interface InitialState {
     isOpen: boolean
-    isThereUser: {
+    isThereUserState: {
         name: string,
         email: string,
         pass: string
@@ -13,7 +13,7 @@ interface InitialState {
 
 const initialState: InitialState = {
     isOpen: false,
-    isThereUser: {
+    isThereUserState: {
         name: "",
         email: "",
         pass: ""
@@ -40,7 +40,7 @@ const statusSlice = createSlice({
     },
     extraReducers: builder => {
         builder.addCase(getUser.fulfilled, (state, action) => {
-            state.isThereUser = action.payload
+            state.isThereUserState = action.payload
         })
     }
 })
