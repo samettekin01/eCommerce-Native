@@ -14,9 +14,9 @@ export interface Store {
 }
 
 export interface UserInformation {
-  name?: string;
-  mail?: string;
-  pass?: string;
+  name: string;
+  mail: string;
+  pass: string;
 }
 
 export default Store;

@@ -1,7 +1,7 @@
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { useEffect, useState } from "react"
 import { UserInformation } from "@/app/types/types"
-import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { Dimensions, StyleSheet, View } from 'react-native'
 import { Button, Input, Text } from '@rneui/themed'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useAppDispatch, useAppSelector } from '@/app/redux/store/store'
@@ -10,40 +10,38 @@ import { NavigationProp } from '@react-navigation/native'
 
 export default function SignUp({ navigation }: { navigation: NavigationProp<any> }) {
 
+    const { userInfo } = useAppSelector(state => state.status);
     const [user, setUser] = useState<UserInformation>({
-        name: "",
-        mail: "",
-        pass: "",
+        name: userInfo.name ? userInfo.name : "",
+        mail: userInfo.mail ? userInfo.mail : "",
+        pass: userInfo.pass ? userInfo.pass : "",
     })
     const [isThereUser, setIsThereUser] = useState<boolean>(false)
     const [error, setError] = useState('');
-    const { isThereUserState } = useAppSelector(state => state.status);
 
     const dispatch = useAppDispatch()
 
     const handleSignUp = async () => {
         if (!user.name) {
-            setError("Don't leave this field empty");
+            setError("Name field is required");
+        } else if (!user.mail) {
+            setError("Mail field is required");
+        } else if (!user.pass) {
+            setError("Password field is required");
         } else {
             try {
                 await AsyncStorage.setItem("user", JSON.stringify(user))
                 dispatch(getUser())
-                navigation.navigate("Home")
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Root', params: { screen: 'MainPage' } }],
+                })
                 setError('')
+                dispatch(getUser())
             } catch (e) {
                 console.log("An error occurred while saving the user: ", e)
             }
         }
-    }
-
-    const handleLogout = async () => {
-        await AsyncStorage.setItem('user', '');
-        dispatch(setIsLogoutMenuOpen(false));
-        dispatch(getUser());
-        navigation.reset({
-            index: 0,
-            routes: [{ name: 'Root', params: { screen: 'MainPage' } }],
-        })
     }
 
     useEffect(() => {
@@ -62,12 +60,8 @@ export default function SignUp({ navigation }: { navigation: NavigationProp<any>
 
     return (
         <View style={styles.container}>
-            {isThereUserState && isThereUserState?.name  && <TouchableOpacity style={styles.buttonContainer} onPress={handleLogout}>
-                <Icon name="logout" size={20} color="#000" />
-                <Text style={styles.logoutbutton}>Logout</Text>
-            </TouchableOpacity>}
             <View style={styles.inputsContainer}>
-                <Text h2 style={styles.headerText}>{isThereUserState && isThereUserState.name ? "Edit Profile" : "Sign Up"}</Text>
+                <Text h2 style={styles.headerText}>{userInfo && userInfo.name ? "Edit Profile" : "Sign Up"}</Text>
                 <View style={styles.inputContainer}>
                     <Input
                         value={user.name}
@@ -77,7 +71,6 @@ export default function SignUp({ navigation }: { navigation: NavigationProp<any>
                         autoFocus={true}
 
                     />
-                    {error && <Text>{error}</Text>}
                 </View>
                 <View style={styles.inputContainer}>
                     <Input
@@ -96,6 +89,7 @@ export default function SignUp({ navigation }: { navigation: NavigationProp<any>
                         onChangeText={text => setUser({ ...user, pass: text })}
                     />
                 </View>
+                {error && <Text>{error}</Text>}
                 <Button onPress={handleSignUp} buttonStyle={styles.button}>
                     Submit
                 </Button>

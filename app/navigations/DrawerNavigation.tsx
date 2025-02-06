@@ -12,6 +12,9 @@ import Search from "../components/Search/Search";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { Badge } from "@rneui/base";
+import { Avatar } from "@rneui/themed";
+import SignUp from "../components/SignUp/SignUp";
+import { getUser } from "../redux/slices/statusSlice";
 
 const Drawer = createDrawerNavigator();
 
@@ -19,12 +22,14 @@ export default function DrawerNavigator() {
 
   const { categories } = useAppSelector(state => state.categories);
   const { amountTotal } = useAppSelector(state => state.shop);
+  const { userInfo } = useAppSelector(state => state.status);
   const navigation = useNavigation<NavigationProp<any>>();
 
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(getCategories());
+    dispatch(getUser())
   }, [dispatch]);
 
   return (
@@ -41,6 +46,14 @@ export default function DrawerNavigator() {
               <Icon name="shopping-cart" size={30} color="#000" />
               {amountTotal > 0 && <Badge value={amountTotal} containerStyle={{ position: 'absolute', top: -4, right: -4 }} />}
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Root', { screen: 'SignUp' })}>
+              {userInfo.name !== undefined || "" ?
+                <Avatar
+                  size={30}
+                  rounded
+                  source={{ uri: "https://picsum.photos/200/?random=1" }}
+                /> : <Icon name="person" size={30} color="#000" />}
+            </TouchableOpacity>
           </View>
         ),
         headerTitle: "E-Commerce",
@@ -48,11 +61,23 @@ export default function DrawerNavigator() {
       }}
       drawerContent={props => <Menu {...props} />}
     >
+      {categories.map((title, index) =>
+        <Drawer.Screen
+          key={index}
+          name={title}
+          component={CategoryProducts}
+          initialParams={{ title }}
+          options={{
+            drawerActiveBackgroundColor: "#f2f2f2",
+            drawerActiveTintColor: '#000',
+            drawerIcon: () => <Icon name="arrow-right" size={20} />
+          }}
+        />
+      )}
       <Drawer.Screen
         name="MainPage"
         component={BottomTabNavigation}
         options={{
-          drawerIcon: () => <Icon name="home" size={20} />,
           drawerItemStyle: { display: "none" }
         }}
       />
@@ -74,17 +99,13 @@ export default function DrawerNavigator() {
         options={{
           drawerItemStyle: { display: 'none' }
         }} />
-      {categories.map((title, index) =>
-        <Drawer.Screen
-          key={index}
-          name={title}
-          component={CategoryProducts}
-          initialParams={{ title }}
-          options={{
-            drawerIcon: () => <Icon name="arrow-right" size={20} />
-          }}
-        />
-      )}
+      <Drawer.Screen
+        name="SignUp"
+        component={SignUp}
+        options={{
+          drawerItemStyle: { display: 'none' }
+        }}
+      />
     </Drawer.Navigator>
   );
 }

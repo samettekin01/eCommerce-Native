@@ -15,7 +15,7 @@ import { useNavigation, NavigationProp, DrawerActions } from '@react-navigation/
 function NavBar() {
   const dispatch = useAppDispatch();
   const { amountTotal } = useAppSelector(state => state.shop);
-  const { isThereUserState } = useAppSelector(state => state.status);
+  const { userInfo } = useAppSelector(state => state.status);
   const { isLogoutMenuOpen } = useAppSelector(state => state.status);
   const pathname = useSegments();
   const navigation = useNavigation<NavigationProp<any>>();
@@ -25,7 +25,7 @@ function NavBar() {
   };
 
   const handlePerson = () => {
-    if (isThereUserState.name !== undefined) {
+    if (userInfo.name !== undefined) {
       dispatch(setIsLogoutMenuOpen(!isLogoutMenuOpen));
     } else {
       navigation.navigate('BottomTab', { screen: 'SignUp' });
@@ -87,15 +87,15 @@ function NavBar() {
               {amountTotal > 0 && <Badge value={amountTotal} containerStyle={{ position: 'absolute', top: -4, right: -4 }} />}
             </TouchableOpacity>
             <TouchableOpacity onPress={handlePerson}>
-              {isThereUserState.name !== undefined ?
+              {userInfo.name !== undefined ?
                 <Avatar
                   size={30}
                   rounded
-                  title={isThereUserState.name.slice(0, 1).toUpperCase()}
+                  title={userInfo.name.slice(0, 1).toUpperCase()}
                   containerStyle={{ backgroundColor: '#3d4db7' }}
                 /> : <Icon name="person" size={30} color="#000" />}
             </TouchableOpacity>
-            {isThereUserState.name !== undefined && isLogoutMenuOpen && (
+            {userInfo.name !== undefined && isLogoutMenuOpen && (
               <View style={styles.logoutMenu}>
                 <TouchableOpacity style={styles.buttonContainer} onPress={handlePerson} >
                   <Icon name="edit" size={20} color="#000" />

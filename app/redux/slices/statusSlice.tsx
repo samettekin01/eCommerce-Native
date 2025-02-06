@@ -3,9 +3,9 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 interface InitialState {
     isOpen: boolean
-    isThereUserState: {
+    userInfo: {
         name: string,
-        email: string,
+        mail: string,
         pass: string
     },
     isLogoutMenuOpen: boolean
@@ -13,9 +13,9 @@ interface InitialState {
 
 const initialState: InitialState = {
     isOpen: false,
-    isThereUserState: {
+    userInfo: {
         name: "",
-        email: "",
+        mail: "",
         pass: ""
     },
     isLogoutMenuOpen: false
@@ -40,7 +40,7 @@ const statusSlice = createSlice({
     },
     extraReducers: builder => {
         builder.addCase(getUser.fulfilled, (state, action) => {
-            state.isThereUserState = action.payload
+            state.userInfo = action.payload
         })
     }
 })

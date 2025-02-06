@@ -16,8 +16,10 @@ export default function Index() {
   }, [dispatch]);
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}
-      initialRouteName="Root">
+    <Stack.Navigator
+      screenOptions={{ headerShown: false }}
+      initialRouteName="Root"
+    >
       <Stack.Screen name="Root" component={DrawerNavigator} />
       <Stack.Screen name="BottomTab" component={BottomTabNavigation} />
     </Stack.Navigator>
