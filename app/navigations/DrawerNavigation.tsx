@@ -21,8 +21,7 @@ const Drawer = createDrawerNavigator();
 export default function DrawerNavigator() {
 
   const { categories } = useAppSelector(state => state.categories);
-  const { amountTotal } = useAppSelector(state => state.shop);
-  const { userInfo } = useAppSelector(state => state.status);
+  const { userInfo, basket } = useAppSelector(state => state.status);
   const navigation = useNavigation<NavigationProp<any>>();
 
   const dispatch = useAppDispatch();
@@ -44,7 +43,9 @@ export default function DrawerNavigator() {
               style={styles.basketIcon}
               onPress={() => navigation.navigate('Root', { screen: 'Basket' })}>
               <Icon name="shopping-cart" size={30} color="#000" />
-              {amountTotal > 0 && <Badge value={amountTotal} containerStyle={{ position: 'absolute', top: -4, right: -4 }} />}
+              {Array.isArray(basket) && basket.length > 0 && (
+                <Badge containerStyle={{ position: 'absolute', top: 0, right: 0 }} />
+              )}
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('Root', { screen: 'SignUp' })}>
               {userInfo.name !== undefined || "" ?

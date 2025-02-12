@@ -1,3 +1,4 @@
+import Store from "@/app/types/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
@@ -8,7 +9,8 @@ interface InitialState {
         mail: string,
         pass: string
     },
-    isLogoutMenuOpen: boolean
+    isLogoutMenuOpen: boolean,
+    basket: Store[]
 }
 
 const initialState: InitialState = {
@@ -18,13 +20,26 @@ const initialState: InitialState = {
         mail: "",
         pass: ""
     },
-    isLogoutMenuOpen: false
+    isLogoutMenuOpen: false,
+    basket: []
 }
 
 export const getUser = createAsyncThunk("user", async () => {
     const userString = await AsyncStorage.getItem('user')
     const user = userString ? JSON.parse(userString) : {}
     return user
+})
+
+export const getBasket = createAsyncThunk("basket", async () => {
+    try {
+        const basketString = await AsyncStorage.getItem("basket")
+        if (basketString) {
+            return JSON.parse(basketString || '[]')
+        }
+    } catch (e) {
+        console.error("Error fetching basket: ", e)
+        return []
+    }
 })
 
 const statusSlice = createSlice({
@@ -41,6 +56,9 @@ const statusSlice = createSlice({
     extraReducers: builder => {
         builder.addCase(getUser.fulfilled, (state, action) => {
             state.userInfo = action.payload
+        })
+        builder.addCase(getBasket.fulfilled, (state, action) => {
+            state.basket = action.payload
         })
     }
 })

@@ -1,48 +1,47 @@
-import React from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native'
-import { useCallback, useEffect, useState } from 'react'
-import { useAppDispatch, useAppSelector } from '@/app/redux/store/store'
-import { calculateAmountTotal, calculateGrandTotal, calculateTotal } from '@/app/redux/slices/shopSlice'
+import { useCallback, useEffect, useState, useMemo } from 'react'
+import { useAppDispatch } from '@/app/redux/store/store'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ListItem, useTheme } from '@rneui/themed'
 import { Avatar, Badge, Button } from '@rneui/base'
 import { Store } from '@/app/types/types'
+import React from 'react'
+import { getBasket } from '@/app/redux/slices/statusSlice'
 
-export default function Basket() {
+const Basket = () => {
     const [basket, setBasket] = useState<Store[]>([])
-    const grandT = useAppSelector(state => state.shop.grandTotal)
+    const [grandT, setGrandT] = useState<number>(0)
+
     const dispatch = useAppDispatch()
 
     const { theme } = useTheme()
 
-    const handleBasket = useCallback(async () => {
+    const handleBasket = async () => {
         try {
             const basketString = await AsyncStorage.getItem("basket")
             if (basketString) {
                 setBasket(JSON.parse(basketString || '[]'))
-                dispatch(calculateTotal())
-                dispatch(calculateGrandTotal())
-                dispatch(calculateAmountTotal())
+                calculateGrandTotal()
+                dispatch(getBasket())
             }
         } catch (e) {
             console.error("Error fetching basket: ", e)
             setBasket([])
         }
-    }, [dispatch])
+    }
 
-    const productDelete = async (id: number) => {
+    const productDelete = useCallback(async (id: number) => {
         try {
             const basketString = await AsyncStorage.getItem("basket")
             if (basketString) {
-                const getBasket: Store[] = JSON.parse(basketString || '[]')
-                const index = getBasket.findIndex(item => item.id === id)
-                getBasket.splice(index, 1)
-                await AsyncStorage.setItem("basket", JSON.stringify(getBasket))
-                setBasket(getBasket)
-                dispatch(calculateTotal())
-                dispatch(calculateGrandTotal())
-                dispatch(calculateAmountTotal())
+                const arrayBasket: Store[] = JSON.parse(basketString || '[]')
+                const index = arrayBasket.findIndex(item => item.id === id)
+                arrayBasket.splice(index, 1)
+                await AsyncStorage.setItem("basket", JSON.stringify(arrayBasket))
+                setBasket(arrayBasket)
+                calculateGrandTotal()
+                dispatch(getBasket())
             }
             if (basket?.findIndex(item => item.id > 0) === -1) {
                 await AsyncStorage.removeItem("basket")
@@ -50,22 +49,7 @@ export default function Basket() {
         } catch (e) {
             console.log(e)
         }
-    }
-
-    const basketDone = async () => {
-        try {
-            const basketString = await AsyncStorage.getItem("basket")
-            if (basketString) {
-                await AsyncStorage.removeItem("basket")
-                setBasket([])
-                dispatch(calculateTotal())
-                dispatch(calculateGrandTotal())
-                dispatch(calculateAmountTotal())
-            }
-        } catch (e) {
-            console.log(e)
-        }
-    }
+    }, [basket, dispatch])
 
     const increment = async (id: number) => {
         try {
@@ -76,10 +60,8 @@ export default function Basket() {
                     product.total = product.amount * product.price
                 }
                 await AsyncStorage.setItem("basket", JSON.stringify(basket))
-                setBasket(basket)
-                dispatch(calculateTotal())
-                dispatch(calculateGrandTotal())
-                dispatch(calculateAmountTotal())
+                setBasket([...basket])
+                calculateGrandTotal()
             }
         } catch (e) {
             console.log(e)
@@ -95,23 +77,74 @@ export default function Basket() {
                     product.total = product.amount * product.price
                 }
                 await AsyncStorage.setItem("basket", JSON.stringify(basket))
-                setBasket(basket)
-                dispatch(calculateTotal())
-                dispatch(calculateGrandTotal())
-                dispatch(calculateAmountTotal())
+                setBasket([...basket])
+                calculateGrandTotal()
             }
         } catch (e) {
             console.log(e)
         }
     }
 
+    const calculateGrandTotal = async () => {
+        try {
+            const result = await AsyncStorage.getItem("basket")
+            if (result) {
+                const getBasket: Store[] = JSON.parse(result)
+                setGrandT(getBasket.map((data) => data.total ?? 0)
+                    .reduce<number>((prev, cur) => prev + cur, 0))
+            }
+            return 0
+        } catch (e) {
+            console.log(`Error parsing basket data: ${e}`)
+            return 0
+        }
+    }
+
+    const basketDone = useCallback(async () => {
+        try {
+            const basketString = await AsyncStorage.getItem("basket")
+            if (basketString) {
+                await AsyncStorage.removeItem("basket")
+                setBasket([])
+                calculateGrandTotal()
+                dispatch(getBasket())
+            }
+        } catch (e) {
+            console.log(e)
+        }
+    }, [dispatch])
+
     useEffect(() => {
         handleBasket()
     }, [handleBasket])
 
+    const renderItem = useCallback(({ item }: { item: Store }) => (
+        <View style={styles.itemContainer}>
+            <TouchableOpacity onPress={() => decrement(item.id)}>
+                <Icon name="arrow-left" size={30} />
+            </TouchableOpacity>
+            <Badge value={item.amount} />
+            <TouchableOpacity onPress={() => increment(item.id)}>
+                <Icon name="arrow-right" size={30} />
+            </TouchableOpacity>
+            <Avatar rounded source={{ uri: item.image }} />
+            <ListItem.Content>
+                <ListItem.Title>{item.title}</ListItem.Title>
+                <ListItem.Subtitle>
+                    <Text style={{ fontWeight: "bold" }}>Total:</Text>{item.total} $
+                </ListItem.Subtitle>
+            </ListItem.Content>
+            <TouchableOpacity onPress={() => productDelete(item.id)}>
+                <Icon name='delete' size={20} style={{ color: theme.colors.primary, marginRight: 10 }} />
+            </TouchableOpacity>
+        </View>
+    ), [decrement, increment, productDelete, theme.colors.primary])
+
+    const memoizedBasket = useMemo(() => basket, [basket])
+
     return (
         <View style={styles.container}>
-            {basket.length > 0 ?
+            {memoizedBasket.length > 0 ?
                 <>
                     <View style={styles.titleContainer}>
                         <Text style={styles.titleText}>Amount</Text>
@@ -119,43 +152,14 @@ export default function Basket() {
                         <Text style={styles.titleText}>Delete</Text>
                     </View>
                     <FlatList
-                        data={basket}
+                        data={memoizedBasket}
                         keyExtractor={item => item.id.toString()}
-                        renderItem={({ item }) => (
-                            <View
-                                style={styles.itemContainer}>
-                                <TouchableOpacity onPress={() => decrement(item.id)}>
-                                    <Icon name="arrow-left" size={30} />
-                                </TouchableOpacity>
-                                <Text style={styles.amount}>
-                                    <Badge value={item.amount} />
-                                </Text>
-                                <TouchableOpacity onPress={() => increment(item.id)}>
-                                    <Icon name="arrow-right" size={30} />
-                                </TouchableOpacity>
-                                <Avatar
-                                    rounded
-                                    source={{ uri: item.image }}
-                                />
-                                <ListItem.Content>
-                                    <ListItem.Title>{item.title}</ListItem.Title>
-                                    <ListItem.Subtitle>
-                                        <Text style={{ fontWeight: "bold" }}>Total:</Text>{item.total} $
-                                    </ListItem.Subtitle>
-                                </ListItem.Content>
-                                <TouchableOpacity onPress={() => productDelete(item.id)}>
-                                    <Icon name='delete' size={20} style={{ color: theme.colors.primary, marginRight: 10 }} />
-                                </TouchableOpacity>
-                            </View>
-                        )}
+                        renderItem={renderItem}
                     />
                     <Text style={styles.totalText}>
                         Total:  {grandT.toFixed(2)} $
                     </Text>
-                    <Button
-                        title="Done"
-                        onPress={basketDone}
-                    />
+                    <Button title="Done" onPress={basketDone} />
                 </>
                 :
                 <View style={styles.noProduct}>
@@ -165,6 +169,8 @@ export default function Basket() {
         </View>
     )
 }
+
+export default React.memo(Basket)
 
 const styles = StyleSheet.create({
     container: {
@@ -195,9 +201,6 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#ccc'
     },
-    amount: {
-        fontSize: 16
-    },
     totalText: {
         fontSize: 18,
         fontWeight: 'bold',
@@ -221,4 +224,4 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold"
     }
-});
+})

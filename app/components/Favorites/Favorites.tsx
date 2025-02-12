@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import ProductCard from '../ProductCard/ProductCard'
 import { NavigationProp } from '@react-navigation/native'
@@ -7,7 +7,7 @@ import { getFavorites } from '@/app/redux/slices/favoritesSlice'
 
 export default function Favorites({ navigation }: { navigation: NavigationProp<any> }) {
 
-    const {favorites } = useAppSelector( state => state.favorites)
+    const { favorites } = useAppSelector(state => state.favorites)
     const dispatch = useAppDispatch()
 
     const getProduct = (id: number) => {
@@ -16,7 +16,7 @@ export default function Favorites({ navigation }: { navigation: NavigationProp<a
 
     useEffect(() => {
         dispatch(getFavorites())
-    },[dispatch])
+    }, [dispatch])
 
     return (
         <ScrollView

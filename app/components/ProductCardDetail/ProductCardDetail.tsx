@@ -1,17 +1,18 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { Image, ScrollView, Text, View } from 'react-native'
 import { Store } from '../../types/types'
 import { Button } from '@rneui/base'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import useFavorite from '@/app/hooks/useFavorite'
 import { useAppDispatch, useAppSelector } from '@/app/redux/store/store'
-import { calculateAmountTotal, calculateTotal } from '@/app/redux/slices/shopSlice'
 import { getDetailProduct } from '@/app/redux/slices/productsSlice'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { getBasket } from '@/app/redux/slices/statusSlice'
 
 export default function ProductCardDetail({ route }: any) {
     const dispatch = useAppDispatch()
     const { productDetail } = useAppSelector<any>(state => state.products)
+    const { basket } = useAppSelector(state => state.status)
 
     const { id } = route.params
 
@@ -27,7 +28,7 @@ export default function ProductCardDetail({ route }: any) {
         image: productDetail.image
     }
 
-    const addBasket = async () => {
+    const addBasket = useCallback(async () => {
         try {
             const basketString = await AsyncStorage.getItem("basket")
             if (basketString) {
@@ -40,15 +41,15 @@ export default function ProductCardDetail({ route }: any) {
                     basket.push(product)
                 }
                 await AsyncStorage.setItem("basket", JSON.stringify([...basket]))
+                dispatch(getBasket())
             } else {
                 await AsyncStorage.setItem("basket", JSON.stringify([product]))
+                dispatch(getBasket())
             }
-            dispatch(calculateTotal())
-            dispatch(calculateAmountTotal())
         } catch (e) {
             alert(e)
         }
-    }
+    }, [product, productDetail.id, productDetail.price, dispatch])
 
     useEffect(() => {
         dispatch(getDetailProduct(id))
@@ -81,14 +82,6 @@ export default function ProductCardDetail({ route }: any) {
                                 source={{ uri: productDetail.image }}
                             />
                         </View>
-                        {/* <View style={{ marginLeft: "auto", marginRight: 20 }}>
-                            <AirbnbRating
-                                count={5}
-                                defaultRating={productDetail.rating?.rate}
-                                isDisabled
-                                size={20}
-                            />
-                        </View> */}
                         <Text
                             style={{ fontSize: 24 }}
                         >{productDetail.title}</Text>
