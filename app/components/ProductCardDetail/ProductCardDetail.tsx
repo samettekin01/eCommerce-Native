@@ -8,11 +8,11 @@ import { useAppDispatch, useAppSelector } from '@/app/redux/store/store'
 import { getDetailProduct } from '@/app/redux/slices/productsSlice'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { getBasket } from '@/app/redux/slices/statusSlice'
+import Loading from '@/app/commons/Loading'
 
 export default function ProductCardDetail({ route }: any) {
     const dispatch = useAppDispatch()
     const { productDetail } = useAppSelector<any>(state => state.products)
-    const { basket } = useAppSelector(state => state.status)
 
     const { id } = route.params
 
@@ -65,7 +65,7 @@ export default function ProductCardDetail({ route }: any) {
                     paddingBottom: 90
                 }}
             >
-                {product ?
+                {product && product.title ?
                     <View>
                         <View style={{
                             display: "flex",
@@ -110,7 +110,7 @@ export default function ProductCardDetail({ route }: any) {
                         </Text>
                     </View>
                     :
-                    <Text>Loading</Text>
+                    <Loading />
                 }
             </ScrollView>
             <View style={{

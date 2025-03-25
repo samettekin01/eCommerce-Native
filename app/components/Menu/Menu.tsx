@@ -19,10 +19,7 @@ export default function Menu(props: any) {
     await AsyncStorage.setItem('user', '');
     dispatch(setIsLogoutMenuOpen(false));
     dispatch(getUser());
-    props.navigation.reset({
-      index: 0,
-      routes: [{ name: 'Root', params: { screen: 'MainPage' } }],
-    })
+    props.navigation.navigate('MainPage');
   }
 
   useEffect(() => {
@@ -47,10 +44,8 @@ export default function Menu(props: any) {
       </View>
       <DrawerItem
         label="Home"
-        onPress={() => props.navigation.reset({
-          index: 0,
-          routes: [{ name: 'Root', params: { screen: 'MainPage' } }],
-        })}
+        onPress={() => props.navigation.navigate('MainPage')}
+        activeBackgroundColor='#f2f2f2'
         icon={() => <Icon name='home' size={20} />}
       />
       <DrawerItemList {...props} />

@@ -32,7 +32,8 @@ export const getProducts = createAsyncThunk("products", async () => {
     return data
 })
 
-export const getDetailProduct = createAsyncThunk("productDetail", async (id: number) => {
+export const getDetailProduct = createAsyncThunk("productDetail", async (id: number, { dispatch }) => {
+    dispatch(resetProductDetail())
     const response = await fetch(`https://fakestoreapi.com/products/${id}`)
     if (!response.ok) {
         throw new Error('Network response was not ok')
@@ -40,7 +41,8 @@ export const getDetailProduct = createAsyncThunk("productDetail", async (id: num
     const data = await response.json()
     return data
 })
-export const getCategory = createAsyncThunk("categories", async (id: string) => {
+export const getCategory = createAsyncThunk("categories", async (id: string, { dispatch }) => {
+    dispatch(resetCategory())
     const response = await fetch(`https://fakestoreapi.com/products/category/${id}`)
     if (!response.ok) {
         throw new Error('Network response was not ok')
@@ -61,7 +63,16 @@ export const getSliderProducts = createAsyncThunk("sliderProducts", async () => 
 const productSlice = createSlice({
     name: "products",
     initialState,
-    reducers: {},
+    reducers: {
+        resetCategory: (state) => {
+            state.category = [],
+                state.categoryStatus = ""
+        },
+        resetProductDetail: (state) => {
+            state.productDetail = [],
+                state.productDetailStatus = ""
+        }
+    },
     extraReducers: builder => {
         builder
             .addCase(getProducts.pending, (state) => {
@@ -99,12 +110,13 @@ const productSlice = createSlice({
                 state.sliderProductsStatus = "Success"
             })
             .addCase(getSliderProducts.pending, (state) => {
-                state.categoryStatus = "Loading"
+                state.sliderProductsStatus = "Loading"
             })
             .addCase(getSliderProducts.rejected, (state) => {
-                state.categoryStatus = "Fail"
+                state.sliderProductsStatus = "Fail"
             })
     }
 })
 
+export const { resetCategory, resetProductDetail } = productSlice.actions
 export default productSlice.reducer

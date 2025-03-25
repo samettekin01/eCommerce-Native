@@ -1,19 +1,22 @@
-import { FlatList, Image, ScrollView, StyleSheet, Text, View, Dimensions, TouchableOpacity } from "react-native";
+import { FlatList, Image, StyleSheet, Text, View, Dimensions, TouchableOpacity } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { useAppSelector } from "@/app/redux/store/store";
 import ProductCard from "../ProductCard/ProductCard";
+import { ScrollView } from "react-native-gesture-handler";
+import Loading from "@/app/commons/Loading";
 
 export default function MainPage({ navigation }: { navigation: NavigationProp<any> }) {
   const { products, sliderProducts } = useAppSelector(state => state.products);
 
   const getProduct = (id: number) => {
-    navigation.navigate('Root', { screen: 'ProductDetail', params: { id: id } });
+    navigation.navigate('ProductDetail', { id: id });
   };
 
   return (
     <ScrollView
       style={{ backgroundColor: "#f2f2f2", marginTop: 10 }}
       showsVerticalScrollIndicator={false}
+
     >
       <FlatList
         style={[styles.boxShadow, {
@@ -26,6 +29,7 @@ export default function MainPage({ navigation }: { navigation: NavigationProp<an
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
+        ListEmptyComponent={<Loading />}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.sliderItemContainer}
@@ -44,7 +48,7 @@ export default function MainPage({ navigation }: { navigation: NavigationProp<an
       />
       <View style={styles.container}>
         <View style={styles.productsContainer}>
-          {products ? products.map(d =>
+          {products && products.length > 0 ? products.map(d =>
             <TouchableOpacity
               key={d.id}
               style={[styles.productContainer, styles.boxShadow]}
@@ -53,7 +57,9 @@ export default function MainPage({ navigation }: { navigation: NavigationProp<an
             >
               <ProductCard data={d} />
             </TouchableOpacity>
-          ) : <Text>not loading</Text>}
+          ) :
+            <Loading />
+          }
         </View>
       </View >
     </ScrollView>

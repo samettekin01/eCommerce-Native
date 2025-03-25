@@ -36,18 +36,18 @@ export default function DrawerNavigator() {
       screenOptions={{
         headerRight: () => (
           <View style={styles.headerIcons}>
-            <TouchableOpacity onPress={() => navigation.navigate('Root', { screen: 'Search' })}>
+            <TouchableOpacity onPress={() => navigation.navigate('Search')}>
               <Icon name="search" size={30} color="#000" />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.basketIcon}
-              onPress={() => navigation.navigate('Root', { screen: 'Basket' })}>
+              onPress={() => navigation.navigate('Basket')}>
               <Icon name="shopping-cart" size={30} color="#000" />
               {Array.isArray(basket) && basket.length > 0 && (
                 <Badge containerStyle={{ position: 'absolute', top: 0, right: 0 }} />
               )}
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Root', { screen: 'SignUp' })}>
+            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
               {userInfo.name !== undefined || "" ?
                 <Avatar
                   size={30}
@@ -62,10 +62,17 @@ export default function DrawerNavigator() {
       }}
       drawerContent={props => <Menu {...props} />}
     >
+      <Drawer.Screen
+        name="MainPage"
+        component={BottomTabNavigation}
+        options={{
+          drawerItemStyle: { display: "none" }
+        }}
+      />
       {categories.map((title, index) =>
         <Drawer.Screen
           key={index}
-          name={title}
+          name={title.charAt(0).toUpperCase() + title.slice(1)}
           component={CategoryProducts}
           initialParams={{ title }}
           options={{
@@ -75,36 +82,34 @@ export default function DrawerNavigator() {
           }}
         />
       )}
-      <Drawer.Screen
-        name="MainPage"
-        component={BottomTabNavigation}
-        options={{
-          drawerItemStyle: { display: "none" }
-        }}
-      />
+
       <Drawer.Screen
         name="Basket"
         component={Basket}
         options={{
-          drawerItemStyle: { display: 'none' }
+          drawerItemStyle: { display: 'none' },
+          headerShown: true,
         }} />
       <Drawer.Screen
         name="ProductDetail"
         component={ProductCardDetail}
         options={{
-          drawerItemStyle: { display: 'none' }
+          drawerItemStyle: { display: 'none' },
+          headerShown: true,
         }} />
       <Drawer.Screen
         name="Search"
         component={Search}
         options={{
-          drawerItemStyle: { display: 'none' }
+          drawerItemStyle: { display: 'none' },
+          headerShown: true,
         }} />
       <Drawer.Screen
         name="SignUp"
         component={SignUp}
         options={{
-          drawerItemStyle: { display: 'none' }
+          drawerItemStyle: { display: 'none' },
+          headerShown: true,
         }}
       />
     </Drawer.Navigator>
