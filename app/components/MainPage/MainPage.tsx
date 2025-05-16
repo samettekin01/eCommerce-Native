@@ -16,7 +16,6 @@ export default function MainPage({ navigation }: { navigation: NavigationProp<an
     <ScrollView
       style={{ backgroundColor: "#f2f2f2", marginTop: 10 }}
       showsVerticalScrollIndicator={false}
-
     >
       <FlatList
         style={[styles.boxShadow, {

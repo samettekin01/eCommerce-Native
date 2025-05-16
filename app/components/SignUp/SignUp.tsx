@@ -6,7 +6,7 @@ import { Button, Input, Text } from '@rneui/themed'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useAppDispatch, useAppSelector } from '@/app/redux/store/store'
 import { getUser, setIsLogoutMenuOpen } from '@/app/redux/slices/statusSlice'
-import { NavigationProp, StackActions } from '@react-navigation/native'
+import { NavigationProp } from '@react-navigation/native'
 
 export default function SignUp({ navigation }: { navigation: NavigationProp<any> }) {
 
@@ -32,9 +32,9 @@ export default function SignUp({ navigation }: { navigation: NavigationProp<any>
             try {
                 await AsyncStorage.setItem("user", JSON.stringify(user))
                 dispatch(getUser())
-                navigation.navigate('MainPage')
                 setError('')
                 dispatch(getUser())
+                navigation.navigate('MainPage')
             } catch (e) {
                 console.log("An error occurred while saving the user: ", e)
             }

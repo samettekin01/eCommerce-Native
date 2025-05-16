@@ -14,7 +14,10 @@ export default function CategoryProducts({ navigation, route }: { navigation: Na
     const { category, categoryStatus } = useAppSelector(state => state.products)
 
     const getProduct = (id: number) => {
-        navigation.navigate("ProductDetail", { id: id })
+        navigation.navigate("MainPage", {
+            screen: "ProductDetail",
+            params: { id: id }
+        })
     }
 
     const fetchData = useCallback(() => {

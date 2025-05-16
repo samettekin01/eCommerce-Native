@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import ProductCard from '../ProductCard/ProductCard'
 import { NavigationProp } from '@react-navigation/native'
@@ -11,7 +11,8 @@ export default function Favorites({ navigation }: { navigation: NavigationProp<a
     const dispatch = useAppDispatch()
 
     const getProduct = (id: number) => {
-        navigation.navigate('Root', { screen: 'ProductDetail', params: { id: id } });
+        // navigation.navigate('Root', { screen: 'ProductDetail', params: { id: id } });
+        navigation.navigate("ProductDetail", { id: id });
     }
 
     useEffect(() => {
