@@ -8,14 +8,25 @@
     "scheme": "eCommerce-Native",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "entryPoint": "./index.js",
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yourcompany.ecommercenative"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.yourcompany.ecommercenative"
     },
     "web": {
       "bundler": "metro",

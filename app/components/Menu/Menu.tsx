@@ -19,7 +19,7 @@ export default function Menu(props: any) {
     await AsyncStorage.setItem('user', '');
     dispatch(setIsLogoutMenuOpen(false));
     dispatch(getUser());
-    props.navigation.navigate('MainPage');
+    props.navigation.navigate('MainPage', { screen: 'Tabs', params: { screen: 'Home' } });
   }
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function Menu(props: any) {
       </View>
       <DrawerItem
         label="Home"
-        onPress={() => props.navigation.navigate('MainPage')}
+        onPress={() => props.navigation.navigate('MainPage', { screen: 'Tabs', params: { screen: 'Home' } })}
         activeBackgroundColor='#f2f2f2'
         icon={() => <Icon name='home' size={20} />}
       />

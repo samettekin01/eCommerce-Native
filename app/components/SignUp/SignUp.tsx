@@ -34,7 +34,7 @@ export default function SignUp({ navigation }: { navigation: NavigationProp<any>
                 dispatch(getUser())
                 setError('')
                 dispatch(getUser())
-                navigation.navigate('MainPage')
+                navigation.navigate('MainPage', { screen: 'Tabs', params: { screen: 'Home' } })
             } catch (e) {
                 console.log("An error occurred while saving the user: ", e)
             }
